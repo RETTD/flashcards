@@ -30,14 +30,17 @@ const SingleFlashcard = ({word, getFlashcard}: SingleFlashcardProps) => {
 
     function nextCard() {
             const date = Date.now()
+        console.log('date', date)
             const object = {
                 ...word.flashcard,
                 id: date
             }
             const forDeleteRef = ref(database, 'words' + `/${word.flashcard.id}`)
-            remove(forDeleteRef).then(() => set(ref(database, 'words' + `/${date}`), object))
+            remove(forDeleteRef).then(() => set(ref(database, 'words' + `/${date.toString()}`), object))
 
+        setTimeout(()=> {
             navigate(0)
+        }, 500)
     }
 
     useEffect(() => {
