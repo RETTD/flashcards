@@ -8,7 +8,7 @@ import store from './redux/store'
 // Components
 import {MainView} from "./components/MainView";
 import {AddFlashcard} from "./components/AddFlashcard";
-import SingleFlashcard from "./components/SingleFlashcard";
+import CheckFlashcard from "./components/CheckFlashcard";
 
 const App = () => {
   return (
@@ -18,7 +18,7 @@ const App = () => {
               <Route
                      key="flashcards"
                      path="/flashcard"
-                     element={<SingleFlashcard />}
+                     element={<CheckFlashcard />}
               />
               <Route
                      key="create"

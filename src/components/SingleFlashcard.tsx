@@ -1,42 +1,34 @@
-import PropTypes from "prop-types";
-import {GET_FLASHCARDS_REQUESTED} from "../redux/actions/action";
-import {connect} from "react-redux";
-import {useEffect, useState} from "react";
 import {CorrectInformation} from "./CorrectInformation";
-import {ref, set, remove} from "firebase/database";
-import {database} from "../firebase/firebaseConfig";
-import { useNavigate } from "react-router-dom";
+import {useEffect, useState} from "react";
 import {FlashCardState} from "../redux/reducers/cards-reducer";
+import {ref, remove, set} from "firebase/database";
+import {database} from "../firebase/firebaseConfig";
+import {useNavigate} from "react-router-dom";
+import {GET_SINGLE_FLASHCARD_REQUESTED} from "../redux/actions/action";
+import {useDispatch, useSelector} from "react-redux";
 
-
-interface SingleFlashcardProps {
-    getFlashcard: () => void,
-    word: FlashCardState
-}
-
-const SingleFlashcard = ({word, getFlashcard}: SingleFlashcardProps) => {
+export const SingleFlashcard = () => {
     const [answer, setAnswer] = useState<string>('')
     const [correct, setCorrect] = useState<boolean | undefined>()
+    const card = useSelector((state: { cards: FlashCardState}) => state.cards.flashcard)
+    const dispatch = useDispatch()
     const navigate = useNavigate();
 
+    console.log('card word', card)
 
     function checkAnswer() {
-        if (answer === word.flashcard.polish) {
-            setCorrect(true)
-        } else {
-            setCorrect(false)
-        }
+        setCorrect(answer === card.polish)
     }
 
     function nextCard() {
-            const date = Date.now()
-        console.log('date', date)
-            const object = {
-                ...word.flashcard,
-                id: date
-            }
-            const forDeleteRef = ref(database, 'words' + `/${word.flashcard.id}`)
-            remove(forDeleteRef).then(() => set(ref(database, 'words' + `/${date.toString()}`), object))
+        const date = Date.now()
+
+        const object = {
+            ...card,
+            id: date
+        }
+        const forDeleteRef = ref(database, 'words' + `/${card.id}`)
+        remove(forDeleteRef).then(() => set(ref(database, 'words' + `/${date.toString()}`), object))
 
         setTimeout(()=> {
             navigate(0)
@@ -44,52 +36,27 @@ const SingleFlashcard = ({word, getFlashcard}: SingleFlashcardProps) => {
     }
 
     useEffect(() => {
-        getFlashcard()
-       // eslint-disable-next-line
-
+        dispatch({ type: GET_SINGLE_FLASHCARD_REQUESTED })
     }, [])
-
 
     return (
         <div>
-            {word &&
+            {card &&
                 <>
-            <p>English: {word.flashcard.english}</p>
-            <div style={{display: 'flex'}}>
-                <p>Answer</p> <input onChange={(e) => setAnswer(e.target.value)}/> <button onClick={checkAnswer}>CHECK!</button>
-            </div>
+                    <p>English: {card.english}</p>
+                    <div style={{display: 'flex'}}>
+                        <p>Answer</p> <input onChange={(e) => setAnswer(e.target.value)}/> <button onClick={checkAnswer}>CHECK!</button>
+                    </div>
                 </>}
-            <CorrectInformation correct={correct} polish={word.flashcard.polish} />
             {correct !== undefined && (
                 <>
+                    <CorrectInformation correct={correct} polish={card.polish}/>
                     <button onClick={nextCard}>
                         Next card
                     </button>
                 </>
             )
-
             }
         </div>
     )
 }
-
-SingleFlashcard.propTypes = {
-    loading: PropTypes.bool,
-    english: PropTypes.string,
-    getFlashcard: PropTypes.func.isRequired,
-}
-
-
-// Get state to props
-const mapStateToProps = (state: { cards: FlashCardState }) => ({
-        word: state.cards
-})
-
-// Get dispatch / function to props
-const mapDispatchToProps = (dispatch: any) => ({
-    getFlashcard: () => dispatch({ type: GET_FLASHCARDS_REQUESTED })
-})
-
-
-// To make those two function works register it using connect
-export default connect(mapStateToProps, mapDispatchToProps)(SingleFlashcard)

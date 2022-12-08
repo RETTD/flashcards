@@ -1,7 +1,7 @@
 import {
     SET_LOADING,
     GET_FLASHCARD,
-    SET_ANSWER,
+    GET_SINGLE_FLASHCARD,
     CREATE_FLASHCARD,
     CLEAR_ANSWER
 } from '../actions/action'
@@ -9,6 +9,7 @@ import {
 // Define your state here
 const initialState = {
     loading: false,
+    flashcards: [''],
     flashcard: {
         english: '',
         polish: '',
@@ -24,6 +25,8 @@ export type WordType = {
 export interface FlashCardState {
     loading: boolean,
     flashcard: WordType,
+    flashcards: string[]
+    answer: string
 }
 
 type ActionProps = {
@@ -44,16 +47,23 @@ export default(state = initialState, {type, payload}: ActionProps): FlashCardSta
         case GET_FLASHCARD:
             return {
                 ...state,
+                flashcards: payload,
+                loading: false
+            }
+        // Get single flashcard
+        case GET_SINGLE_FLASHCARD:
+            return {
+                ...state,
                 flashcard: payload,
                 loading: false
             }
-        // // Create new flashcard
-        // case CREATE_FLASHCARD:
-        //     return {
-        //         ...state,
-        //         flashcard: state.flashcard,
-        //         loading: false
-        //     }
+        // Create new flashcard
+        case CREATE_FLASHCARD:
+            return {
+                ...state,
+                flashcard: state.flashcard,
+                loading: false
+            }
 
         // Return default state if you didn't match any case
         default:
