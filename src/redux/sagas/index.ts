@@ -1,9 +1,10 @@
-import { spawn } from 'redux-saga/effects'
+import { spawn, fork } from 'redux-saga/effects'
 
 // Sagas
-import cardsSaga from './cards-saga'
+import cardsSaga, {getSingleFlashcard} from './cards-saga'
 
 // Export the root saga
 export default function* rootSaga() {
+    yield fork(getSingleFlashcard)
     yield spawn(cardsSaga)
 }

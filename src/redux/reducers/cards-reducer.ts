@@ -3,18 +3,13 @@ import {
     GET_FLASHCARD,
     GET_SINGLE_FLASHCARD,
     CREATE_FLASHCARD,
-    CLEAR_ANSWER
+    REMOVE_FIRST_ELEMENT
 } from '../actions/action'
 
 // Define your state here
-const initialState = {
+const initialState: FlashCardState = {
     loading: false,
     flashcards: [''],
-    flashcard: {
-        english: '',
-        polish: '',
-        id: 1
-    },
     answer: '',
 }
 
@@ -24,19 +19,19 @@ export type WordType = {
 
 export interface FlashCardState {
     loading: boolean,
-    flashcard: WordType,
+    flashcard?: WordType,
     flashcards: string[]
     answer: string
 }
 
-type ActionProps = {
-    type: string,
-    payload: any,
+ type MyAction = {
+    type: string
+    payload: string[] | WordType
 }
 
 // This export default will control your state for your application
-export default(state = initialState, {type, payload}: ActionProps): FlashCardState =>{
-    switch(type) {
+export default(state = initialState, action: MyAction) => {
+    switch(action.type) {
         // Set loading
         case SET_LOADING:
             return {
@@ -47,14 +42,14 @@ export default(state = initialState, {type, payload}: ActionProps): FlashCardSta
         case GET_FLASHCARD:
             return {
                 ...state,
-                flashcards: payload,
+                flashcards: action.payload,
                 loading: false
             }
         // Get single flashcard
         case GET_SINGLE_FLASHCARD:
             return {
                 ...state,
-                flashcard: payload,
+                flashcard: action.payload,
                 loading: false
             }
         // Create new flashcard
@@ -64,6 +59,12 @@ export default(state = initialState, {type, payload}: ActionProps): FlashCardSta
                 flashcard: state.flashcard,
                 loading: false
             }
+        case REMOVE_FIRST_ELEMENT:
+            // Update the relevant piece of state in the store
+            return {
+                ...state,
+                flashcards: action.payload
+            };
 
         // Return default state if you didn't match any case
         default:
