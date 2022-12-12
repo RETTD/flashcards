@@ -1,26 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { Routes, Route, Link } from "react-router-dom";
 
-function App() {
+// bring Provider from react-redux, it's the bridge for connecting react to redux
+import { Provider } from 'react-redux'
+// Bring the redux store too
+import store from './redux/store'
+// Components
+import {MainView} from "./components/MainView";
+import {AddFlashcard} from "./components/AddFlashcard";
+import CheckFlashcard from "./components/CheckFlashcard";
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+      // Register your redux Provider here
+      <Provider store={store}>
+          <Routes>
+              <Route
+                     key="flashcards"
+                     path="/flashcard"
+                     element={<CheckFlashcard />}
+              />
+              <Route
+                     key="create"
+                     path="/create"
+                     element={<AddFlashcard />}
 
-export default App;
+              />
+                <Route
+                    key='main'
+                    path='/'
+                    element={<MainView/>}
+                />
+          </Routes>
+      </Provider>
+  )
+}
+export default App
